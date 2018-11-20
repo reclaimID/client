@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
     reclaim-ui:
-        image: reclaim-ui
+        image: reclaimid/ui
         container_name: reclaim-ui
         networks:
             reclaim-net:
@@ -11,7 +11,7 @@ services:
             - VIRTUAL_HOST=ui.reclaim.local
 
     reclaim-service:
-        image: reclaim-service
+        image: reclaimid/runtime
         container_name: reclaim-service
         environment:
             - RECLAIMUI_URL=https://ui.reclaim.local/#/identities
