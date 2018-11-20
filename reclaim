@@ -60,7 +60,8 @@ then
 fi
 
 echo "Usage:"
-echo "$0 up: starts $PROD"
-echo "$0 down: shuts $PROD down"
+echo "$0 start: starts $PROD"
+echo "$0 stop: shuts $PROD down"
+echo "$0 restart: restarts $PROD"
 echo "$0 purge: shuts $PROD down and purges its data"
 
