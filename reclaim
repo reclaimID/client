@@ -2,20 +2,20 @@
 
 PROD="reclaim"
 
-if [ $1 = "stop" ]
+if [[ $1 = "stop" ]]
 then
     echo "Shutting down $PROD"
     docker-compose -f config/docker-compose.yml down
     exit 0
 fi
 
-if [ $1 = "restart" ]
+if [[ $1 = "restart" ]]
 then
     echo "Restarting $PROD"
     docker-compose -f config/docker-compose.yml down
 fi
 
-if ([ $1 = "start" ] || [ $1 = "restart" ])
+if ([[ $1 = "start" ]] || [[ $1 = "restart" ]])
 then
     echo -n "Starting $PROD..."
 
@@ -59,6 +59,28 @@ then
     exit 0
 fi
 
+echo "                     __      _         "
+echo "   ________  _ _____/ /___ _(_)___ ___ "
+echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
+echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
+echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
+echo "                                       "
+echo "https://reclaim-identity.io"
+echo "(C) 2018 Fraunhofer AISEC"
+echo ""
+echo "Status:"
+if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-service) 2>/dev/null` ]; then
+  echo "* Service is not running."
+else
+  echo "* Service is running."
+fi
+
+if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-ui) 2>/dev/null` ]; then
+  echo "* UI is not running."
+else
+  echo "* UI is running."
+fi
+echo ""
 echo "Usage:"
 echo "$0 start: starts $PROD"
 echo "$0 stop: shuts $PROD down"
