@@ -1,0 +1,66 @@
+#!/bin/bash
+
+PROD="reclaim"
+
+if [ $1 = "stop" ]
+then
+    echo "Shutting down $PROD"
+    docker-compose -f config/docker-compose.yml down
+    exit 0
+fi
+
+if [ $1 = "restart" ]
+then
+    echo "Restarting $PROD"
+    docker-compose -f config/docker-compose.yml down
+fi
+
+if ([ $1 = "start" ] || [ $1 = "restart" ])
+then
+    echo -n "Starting $PROD..."
+
+    # TODO: check whether cert has already been generated
+    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
+    then
+      echo "\n"
+      echo "No CA cert found. Generating..."
+      if [ -f ./bin/generate-ca ]
+      then
+        ./bin/generate-ca
+      else
+        echo "Error... CA helper not found!"
+        exit 1
+      fi
+    else
+        echo "gns certificate has already been added"
+    fi
+
+    docker-compose -f config/docker-compose.yml pull
+    docker-compose -f config/docker-compose.yml up -d
+    echo "started."
+    exit 0
+fi
+
+if [[ $1 = "purge" ]]
+then
+    echo "Purging $PROD"
+    docker-compose -f config/docker-compose.yml down --remove
+    echo "Do you also want to remove the named volumes (persistent data)?"
+    echo -n "(Y/n) "
+    read input
+    if [[ $input = "Y" ]]
+    then
+        echo "removing named volumes"
+        docker volume rm reclaim-gnunet || true
+        docker volume rm reclaim || true
+    else
+        echo "not removing named volumes"
+    fi
+    exit 0
+fi
+
+echo "Usage:"
+echo "$0 up: starts $PROD"
+echo "$0 down: shuts $PROD down"
+echo "$0 purge: shuts $PROD down and purges its data"
+

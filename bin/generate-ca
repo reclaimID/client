@@ -1,0 +1,97 @@
+#!/bin/sh
+# This shell script will generate an X509 certificate for your proxy
+#
+
+if ! which certutil > /dev/null
+then
+    echo "'certutil' command not found. Please install it."
+    exit 1
+fi
+
+if ! which openssl > /dev/null
+then
+    echo "'openssl' command not found. Please install it."
+    exit 1
+fi
+
+
+#echo "Generating CA"
+options=''
+while getopts "c:" opt; do
+    case $opt in
+        c)
+            options="$options -c $OPTARG"
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+    esac
+done
+
+GNSCERT="gns/gnscert.pem"
+GNSCAKY="gns/gnscakey.pem"
+GNSCANO="gns/gnscakeynoenc.pem"
+GNS_CA_KEY_PEM="gns/gns_ca_cert.pem"
+
+mkdir -p gns
+
+openssl req -config ./config/openssl.cnf -new -x509 -days 3650 -extensions v3_ca -keyout ${GNSCAKY} -out ${GNSCERT} -subj "/C=ZZ/L=World/O=GNU/OU=GNUnet/CN=GNS Proxy CA/emailAddress=bounce@gnunet.org" -passout pass:"GNU Name System" >/dev/null 2>&1
+
+#echo "Removing passphrase from key"
+openssl rsa -passin pass:"GNU Name System" -in ${GNSCAKY} -out ${GNSCANO} >/dev/null 2>&1
+
+#echo "Making private key available to gnunet-gns-proxy"
+cat ${GNSCERT} ${GNSCANO} > ${GNS_CA_KEY_PEM}
+
+# copy cert in named volume
+docker run -it --rm -v reclaim-gnunet:/volume -v ${PWD}:/data alpine sh -c 'mkdir -p /volume/gns && cp /data/'${GNS_CA_KEY_PEM}' /volume/gns'
+
+echo "======================================================================"
+echo "=> Your CA certificate for GNS is $GNSCERT                          "
+echo "=> Please import it into your browser!                              "
+echo "=> NOTE: This CA certificate is generated.                          "
+echo "=> It only exists on YOUR computer                                  "
+echo "======================================================================"
+
+echo "This utility can also add your newly generated CA certificate to the trust stores of Chrome and Firefox. Do you want to allow this?"
+echo -n "(Y/n) "
+read input
+if [ $input = "Y" ]
+then
+    for f in ~/.mozilla/firefox/*.*/
+    do
+        if [ -d $f ]; then
+            echo "Should the CA certificate be imported in profile $f?"
+            echo -n "(Y/n) "
+            read input
+            if [ $input = "Y" ]
+            then
+                echo "Importing CA into Firefox at $f"
+                # delete old certificate (if any)
+                certutil -D -n "GNS Proxy CA" -d "$f" >/dev/null 2>/dev/null
+                # add new certificate
+                certutil -A -n "GNS Proxy CA" -t CT,, -d sql:"$f" < $GNSCERT
+            else
+                echo "Didn't import in $f"
+            fi
+        fi
+    done
+
+    if [ -d ~/.pki/nssdb/ ]; then
+        echo "Importing CA into Chrome at ~/.pki/nssdb/"
+        # delete old certificate (if any)
+        certutil -D -n "GNS Proxy CA" -d ~/.pki/nssdb/ >/dev/null 2>/dev/null
+        # add new certificate
+        certutil -A -n "GNS Proxy CA" -t CT,, -d ~/.pki/nssdb/ < $GNSCERT
+    fi
+
+    echo "Imported certificates."
+else
+    echo "Not done anything."
+fi
+

@@ -1,0 +1,63 @@
+version: "3.5"
+
+services:
+    reclaim-ui:
+        image: reclaim-ui
+        container_name: reclaim-ui
+        networks:
+            reclaim-net:
+                ipv4_address: 10.1.1.2
+        environment:
+            - VIRTUAL_HOST=ui.reclaim.local
+
+    reclaim-service:
+        image: reclaim-service
+        container_name: reclaim-service
+        environment:
+            - RECLAIMUI_URL=https://ui.reclaim.local/#/identities
+            - RECLAIMAPI_BASE=https://api.reclaim.local
+            - VIRTUAL_HOST=api.reclaim.local
+            - VIRTUAL_PORT=7776
+        stdin_open: true
+        tty: true
+        networks:
+            reclaim-net:
+                ipv4_address: 10.1.1.3
+        volumes:
+            - reclaim:/etc/reclaim
+            - reclaim-gnunet:/root/.local/share/gnunet
+        ports:
+            - "7777:7777"
+            - "7776:7776"
+            - "2086:2086"
+
+    # proxy companion to serve HTTP(S) requests
+    nginx-proxy:
+        image: jwilder/nginx-proxy:latest
+        container_name: nginx-proxy
+        environment:
+            - ENABLE_IPV6=true
+        networks:
+            reclaim-net:
+                ipv4_address: 10.1.1.4
+        volumes:
+            - reclaim:/etc/nginx/certs:ro
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        ports:
+            - "80:80"
+            - "443:443"
+
+volumes:
+    reclaim:
+        name: reclaim
+    reclaim-gnunet:
+        name: reclaim-gnunet
+
+networks:
+    reclaim-net:
+        name: reclaim-network
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.1.1.0/29
+
