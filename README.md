@@ -1,4 +1,4 @@
-# The reclaim service and OpenID Connect server
+# The reclaim client
 Reclaim is a novel approach for decentralized, self-sovereign identity management.
 Its core features are:
 
