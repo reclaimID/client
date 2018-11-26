@@ -35,7 +35,7 @@ then
         echo "gns certificate has already been added"
     fi
 
-    docker-compose -f config/docker-compose_demo.yml pull
+    #docker-compose -f config/docker-compose_demo.yml pull
     docker-compose -f config/docker-compose_demo.yml up -d
     echo "started."
     exit 0
@@ -66,6 +66,25 @@ then
     echo "started."
     exit 0
 fi
+
+if [[ $1 = "purge_demo" ]]
+then
+    echo "Purging $PROD demo"
+    docker-compose -f config/docker-compose_demo.yml down --remove
+    echo "Do you also want to remove the named volumes (persistent data)?"
+    echo -n "(Y/n) "
+    read input
+    if [[ $input = "Y" ]]
+    then
+        echo "removing named volumes"
+        docker volume rm reclaim-gnunet || true
+        docker volume rm reclaim || true
+    else
+        echo "not removing named volumes"
+    fi
+    exit 0
+fi
+
 
 if [[ $1 = "purge" ]]
 then
