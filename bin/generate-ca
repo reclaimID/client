@@ -61,7 +61,7 @@ echo "======================================================================"
 echo "This utility can also add your newly generated CA certificate to the trust stores of Chrome and Firefox. Do you want to allow this?"
 echo -n "(Y/n) "
 read input
-if [ $input = "Y" ]
+if ! [ -z $input ] && [ $input = "Y" ]
 then
     for f in ~/.mozilla/firefox/*.*/
     do
@@ -69,7 +69,7 @@ then
             echo "Should the CA certificate be imported in profile $f?"
             echo -n "(Y/n) "
             read input
-            if [ $input = "Y" ]
+            if ! [ -z $input ] && [ $input = "Y" ]
             then
                 echo "Importing CA into Firefox at $f"
                 # delete old certificate (if any)
