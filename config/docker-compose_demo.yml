@@ -44,7 +44,7 @@ services:
             reclaim-net:
                 ipv4_address: 10.1.1.5
         depends_on:
-            - "reclaim-service"
+            - "reclaim-runtime"
             - "nginx-proxy"
 
     # proxy companion to serve HTTP(S) requests

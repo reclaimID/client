@@ -35,7 +35,7 @@ then
         echo "gns certificate has already been added"
     fi
 
-    #docker-compose -f config/docker-compose_demo.yml pull
+    docker-compose -f config/docker-compose_demo.yml pull
     docker-compose -f config/docker-compose_demo.yml up -d
     echo "started."
     exit 0
@@ -114,7 +114,7 @@ echo "https://reclaim-identity.io"
 echo "(C) 2018 Fraunhofer AISEC"
 echo ""
 echo "Status:"
-if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-service) 2>/dev/null` ]; then
+if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-runtime) 2>/dev/null` ]; then
   echo "* Service is not running."
 else
   echo "* Service is running."

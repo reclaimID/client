@@ -10,9 +10,9 @@ services:
         environment:
             - VIRTUAL_HOST=ui.reclaim.local
 
-    reclaim-service:
+    reclaim-runtime:
         image: reclaimid/runtime:latest
-        container_name: reclaim-service
+        container_name: reclaim-runtime
         environment:
             - RECLAIMUI_URL=https://ui.reclaim.local/#/identities
             - RECLAIMAPI_BASE=https://api.reclaim.local
