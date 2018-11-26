@@ -17,7 +17,7 @@ fi
 
 if ([[ $1 = "start_demo" ]] || [[ $1 = "restart_demo" ]])
 then
-    echo -n "Starting $PROD..."
+    echo -n "Starting $PROD Demo..."
 
     # check whether cert has already been generated
     if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
