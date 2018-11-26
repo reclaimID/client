@@ -18,6 +18,7 @@ services:
             - RECLAIMAPI_BASE=https://api.reclaim.local
             - VIRTUAL_HOST=api.reclaim.local
             - VIRTUAL_PORT=7776
+            - UI_IP=10.1.1.2 # should be the same as static assignment for service reclaim-ui
         stdin_open: true
         tty: true
         networks:
