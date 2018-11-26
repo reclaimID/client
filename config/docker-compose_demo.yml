@@ -11,7 +11,7 @@ services:
             - VIRTUAL_HOST=ui.reclaim.local
 
     reclaim-service:
-        image: reclaimid/runtime:latest
+        image: reclaimid/runtime:demo
         container_name: reclaim-service
         environment:
             - RECLAIMUI_URL=https://ui.reclaim.local/#/identities
@@ -31,6 +31,17 @@ services:
             - "7777:7777"
             - "7776:7776"
             - "2086:2086"
+
+    reclaim-demo:
+        image: reclaimid/demo
+        container_name: reclaim-demo
+        environment:
+            - RECLAIM_RUNTIME=10.1.1.3
+            - VIRTUAL_HOST=demo.reclaim.local
+            - VIRTUAL_PORT=4567
+        networks:
+            reclaim-net:
+                ipv4_address: 10.1.1.5
 
     # proxy companion to serve HTTP(S) requests
     nginx-proxy:

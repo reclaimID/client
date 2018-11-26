@@ -15,11 +15,37 @@ then
     docker-compose -f config/docker-compose.yml down
 fi
 
+if ([[ $1 = "start_demo" ]] || [[ $1 = "restart_demo" ]])
+then
+    echo -n "Starting $PROD..."
+
+    # check whether cert has already been generated
+    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
+    then
+      echo "\n"
+      echo "No CA cert found. Generating..."
+      if [ -f ./bin/generate-ca ]
+      then
+        ./bin/generate-ca
+      else
+        echo "Error... CA helper not found!"
+        exit 1
+      fi
+    else
+        echo "gns certificate has already been added"
+    fi
+
+    docker-compose -f config/docker-compose_demo.yml pull
+    docker-compose -f config/docker-compose_demo.yml up -d
+    echo "started."
+    exit 0
+fi
+
 if ([[ $1 = "start" ]] || [[ $1 = "restart" ]])
 then
     echo -n "Starting $PROD..."
 
-    # TODO: check whether cert has already been generated
+    # check whether cert has already been generated
     if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
     then
       echo "\n"
@@ -83,7 +109,9 @@ fi
 echo ""
 echo "Usage:"
 echo "$0 start: starts $PROD"
+echo "$0 start_demo: starts $PROD with one example relying party"
 echo "$0 stop: shuts $PROD down"
 echo "$0 restart: restarts $PROD"
+echo "$0 restart_demo: restarts $PROD and one example relying party"
 echo "$0 purge: shuts $PROD down and purges its data"
 
