@@ -9,6 +9,14 @@ then
     exit 0
 fi
 
+if [[ $1 = "stop_demo" ]]
+then
+    echo "Shutting down $PROD"
+    docker-compose -f config/docker-compose_demo.yml down
+    exit 0
+fi
+
+
 if [[ $1 = "restart" ]]
 then
     echo "Restarting $PROD"
