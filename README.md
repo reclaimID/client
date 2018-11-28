@@ -8,16 +8,19 @@ Its core features are:
 
 ## Requirements
 
+* [Firefox](https://firefox.com)
 * [docker](https://www.docker.com)
 * [docker-compose](https://docs.docker.com/compose/install/)
+* certutil (Optional, only needed for auto-import of GNS CA certificates)
 
+**Note:** Only Firefox is supported at this time.
 ## Installation
 
 Clone this repository.
 
 ## Usage
 
-**Note:** Only Firefox is supported at this time.
+
 To start reclaim execute:
 ```
 $ ./reclaim start
@@ -27,6 +30,11 @@ To stop reclaim execute:
 ```
 $ ./reclaim stop
 ```
+
+You can see the status of reclaim as well as additional commands by omitting all arguments:
+```
+$ ./reclaim
+
 
 **IMPORTANT:** Upon starting reclaim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in gns/gnscert.pem.
 
