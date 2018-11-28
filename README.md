@@ -48,6 +48,7 @@ That's it! At this point you might have to restart Firefox.
 
 You can manage your identities by accessing https://ui.reclaim. This web interface is running on your local machine.
 
-To test reclaim, you can go to the demo page https://demo.reclaim in your browser to test a reclaim login. This webpage it running on our servers [here](https://demo.reclaim-identity.io/) but must be accessed through GNS to be usable with a reclaim login.
+To test reclaim, you can go to the demo page https://demo.reclaim in your browser. 
+This demo is running on your local machine and must be accessed through the proxy to be usable with a reclaim login.
 
 (c) 2018 Fraunhofer AISEC
