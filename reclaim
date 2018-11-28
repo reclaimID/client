@@ -9,44 +9,50 @@ then
   COMPOSE_FILE=$COMPOSE_FILE_DEMO
 fi
 
-if [[ $2 = "update" ]]
+if [[ $1 = "update" ]]
 then
-    echo "Shutting down $PROD"
-    docker-compose -f $COMPOSE_FILE pull
-    exit 0
+  echo "Shutting down $PROD"
+  docker-compose -f $COMPOSE_FILE pull
+  exit 0
 fi
 
-if [[ $2 = "stop" ]]
+if [[ $1 = "stop" ]]
 then
-    echo "Shutting down $PROD"
-    docker-compose -f $COMPOSE_FILE down
-    exit 0
+  echo "Shutting down $PROD"
+  docker-compose -f $COMPOSE_FILE down
+  exit 0
 fi
 
-if [[ $2 = "restart" ]]
+if [[ $1 = "restart" ]]
 then
-    echo "Restarting $PROD"
-    docker-compose -f $COMPOSE_FILE down
+  echo "Restarting $PROD"
+  docker-compose -f $COMPOSE_FILE down
 fi
 
-if ([[ $2 = "start" ]] || [[ $1 = "restart" ]])
+if ([[ $1 = "start" ]] || [[ $1 = "restart" ]])
 then
-    echo -n "Starting $PROD"
+  echo -n "Starting $PROD"
 
-    # check whether cert has already been generated
-    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
+  # check whether cert has already been generated
+  if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
+  then
+    echo "\n"
+    echo "No CA cert found. Generating..."
+    if [ -f ./bin/generate-ca ]
     then
-      echo "\n"
-      echo "No CA cert found. Generating..."
-      if [ -f ./bin/generate-ca ]
-      then
-        ./bin/generate-ca
-      else
-        echo "Error... CA helper not found!"
-        exit 1
-      fi
+      ./bin/generate-ca
     else
-      echo "gns certificate has already been added"
+      echo "Error... CA helper not found!"
+      exit 1
+    fi
+  else
+    echo "gns certificate has already been added"
+  fi
+  if ! [ -f config/initial_setup ]
+  then
+    if [ -f config/demo_enabled ]
+    then
+      rm config/demo_enabled
     fi
     echo "Do you want to setup the demo relying party?"
     echo -n "(Y/n) "
@@ -54,62 +60,65 @@ then
     if ! [ -z $input ] && [ $input = "Y" ]
     then
       touch config/demo_enabled
-      docker-compose -f $COMPOSE_FILE_DEMO up -d
-    else
-      docker-compose -f $COMPOSE_FILE up -d
+      $COMPOSE_FILE=$COMPOSE_FILE_DEMO
     fi
-    echo "started."
-    exit 0
+    touch config/initial_setup
   fi
+  docker-compose -f $COMPOSE_FILE up -d
+  echo "started."
+  exit 0
+fi
 
-  if [[ $2 = "purge" ]]
+if [[ $1 = "purge" ]]
+then
+  echo "Purging $PROD"
+  docker-compose -f $COMPOSE_FILE down --remove
+  echo "Do you also want to remove the named volumes (persistent data)?"
+  echo -n "(Y/n) "
+  read input
+  if [[ $input = "Y" ]]
   then
-    echo "Purging $PROD"
-    docker-compose -f $COMPOSE_FILE down --remove
-    echo "Do you also want to remove the named volumes (persistent data)?"
-    echo -n "(Y/n) "
-    read input
-    if [[ $input = "Y" ]]
-    then
-      echo "removing named volumes"
-      docker volume rm reclaim-gnunet || true
-      docker volume rm reclaim || true
-    else
-      echo "not removing named volumes"
-    fi
-    exit 0
-  fi
-
-  echo "                     __      _         "
-  echo "   ________  _ _____/ /___ _(_)___ ___ "
-  echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
-  echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
-  echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
-  echo "                                       "
-  echo "https://reclaim-identity.io"
-  echo "(C) 2018 Fraunhofer AISEC"
-  echo ""
-  echo "Status:"
-  if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f $COMPOSE_FILE ps -q reclaim-runtime) 2>/dev/null` ]; then
-    echo "* Service is not running."
+    echo "removing named volumes"
+    rm config/demo_enabled
+    rm config/initial_setup
+    docker volume rm reclaim-gnunet || true
+    docker volume rm reclaim || true
   else
-    echo "* Service is running."
+    echo "not removing named volumes"
   fi
+  exit 0
+fi
 
-  if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f $COMPOSE_FILE ps -q reclaim-ui) 2>/dev/null` ]; then
-    echo "* UI is not running."
-  else
-    echo "* UI is running."
-  fi
-  if [ -f config/demo_enabled ]
-  then
-    echo "* Demo relying party is enabled."
-  fi
-  echo ""
-  echo "Usage: $0 <option>"
-  echo "Values for <option> are:"
-  echo "$0 start: starts $PROD"
-  echo "$0 stop: shuts $PROD down"
-  echo "$0 restart: restarts $PROD"
-  echo "$0 purge: shuts $PROD down and purges its data"
+echo "                     __      _         "
+echo "   ________  _ _____/ /___ _(_)___ ___ "
+echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
+echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
+echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
+echo "                                       "
+echo "https://reclaim-identity.io"
+echo "(C) 2018 Fraunhofer AISEC"
+echo ""
+echo "Status:"
+if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f $COMPOSE_FILE ps -q reclaim-runtime) 2>/dev/null` ]; then
+  echo "* Service is not running."
+else
+  echo "* Service is running."
+fi
+
+if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f $COMPOSE_FILE ps -q reclaim-ui) 2>/dev/null` ]; then
+  echo "* UI is not running."
+else
+  echo "* UI is running."
+fi
+if [ -f config/demo_enabled ]
+then
+  echo "* Demo relying party is enabled."
+fi
+echo ""
+echo "Usage: $0 <option>"
+echo "Values for <option> are:"
+echo "$0 start: starts $PROD"
+echo "$0 stop: shuts $PROD down"
+echo "$0 restart: restarts $PROD"
+echo "$0 purge: shuts $PROD down and purges its data"
 
