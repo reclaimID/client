@@ -34,6 +34,7 @@ $ ./reclaim stop
 You can see the status of reclaim as well as additional commands by omitting all arguments:
 ```
 $ ./reclaim
+```
 
 
 **IMPORTANT:** Upon starting reclaim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in gns/gnscert.pem.
