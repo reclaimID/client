@@ -24,7 +24,10 @@ startup() {
         echo "gns certificate has already been added"
     fi
 
-    docker-compose -f $1 pull
+    if [[ $2 != "--no-pull" ]]
+    then
+        docker-compose -f $1 pull
+    fi
     docker-compose -f $1 up -d
 }
 
@@ -59,14 +62,14 @@ fi
 if ([[ $1 = "start_demo" ]] || [[ $1 = "restart_demo" ]])
 then
     echo -n "Starting $PROD Demo..."
-    startup config/docker-compose_demo.yml
+    startup config/docker-compose_demo.yml $2
     echo "started."
 fi
 
 if ([[ $1 = "start" ]] || [[ $1 = "restart" ]])
 then
     echo -n "Starting $PROD..."
-    startup config/docker-compose.yml
+    startup config/docker-compose.yml $2
     echo "started."
     exit 0
 fi
@@ -115,4 +118,5 @@ echo "$0 restart: restarts $PROD"
 echo "$0 restart_demo: restarts $PROD and one example relying party"
 echo "$0 purge: shuts $PROD down and purges its data"
 echo "$0 purge_demo: shuts $PROD and demo down and purges their data"
+echo "the --no-pull flag can be used to prevent pulling images from remote"
 
