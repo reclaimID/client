@@ -68,7 +68,6 @@ parse_opt() {
 }
 
 stop_reclaim() {
-    reclaim_banner
     echo "Shutting down $PROD"
     if [ -f .tmp/compose ]
     then
@@ -77,11 +76,9 @@ stop_reclaim() {
     docker-compose -f $COMPOSEFILE down
 
     echo -e "reclaim stopped.\n"
-    reclaim_status
 }
 
 start_reclaim() {
-    reclaim_banner
     echo "Starting $PROD..."
     # check whether cert has already been generated
     if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
@@ -122,15 +119,17 @@ start_reclaim() {
     docker-compose -f $COMPOSEFILE up -d
 
     echo -e "started.\n"
-    reclaim_status
 }
 
 restart_reclaim() {
+    reclaim_banner
     stop_reclaim
     start_reclaim
+    reclaim_status
 }
 
 purge_reclaim() {
+    reclaim_banner
     echo "Purging $PROD"
 
     if [ -f .tmp/compose ]
@@ -151,6 +150,7 @@ purge_reclaim() {
     else
         echo "not removing named volumes"
     fi
+    reclaim_status
 }
 
 reclaim_banner() {
