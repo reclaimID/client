@@ -8,8 +8,8 @@ REC='\033[1;34m'
 NC='\033[0m'
 NO_PULL=0
 DEMO_ENABLED=0
-DOCKERFILE="config/docker-compose.yml"
-CUSTOM_DOCKERFILE=0
+COMPOSEFILE="config/docker-compose.yml"
+CUSTOM_COMPOSEFILE=0
 ACTION="none"
 NOARG=1
 
@@ -25,12 +25,12 @@ parse_opt() {
                 ;;
             -d|--demo)
                 DEMO_ENABLED=1
-                DOCKERFILE="config/docker-compose_demo.yml"
+                COMPOSEFILE="config/docker-compose_demo.yml"
                 shift
                 ;;
             -f|--dockerfile)
-                DOCKERFILE="$2"
-                CUSTOM_DOCKERFILE=1
+                COMPOSEFILE="$2"
+                CUSTOM_COMPOSEFILE=1
                 shift
                 shift
                 ;;
@@ -60,7 +60,7 @@ parse_opt() {
         esac
     done
 
-    if [[ $CUSTOM_DOCKERFILE = 1 && $DEMO_ENABLED = 1 ]];
+    if [[ $CUSTOM_COMPOSEFILE = 1 && $DEMO_ENABLED = 1 ]];
     then
         echo -e "${RED}WARNING: demo was enabled and custom Dockerfile set. This is currently NOT supported."
         echo -e "Not starting demo, then.${NC}"
@@ -72,9 +72,9 @@ stop_reclaim() {
     echo "Shutting down $PROD"
     if [ -f .tmp/compose ]
     then
-        DOCKERFILE=`cat .tmp/compose`
+        COMPOSEFILE=`cat .tmp/compose`
     fi
-    docker-compose -f $DOCKERFILE down
+    docker-compose -f $COMPOSEFILE down
 
     echo -e "reclaim stopped.\n"
     reclaim_status
@@ -86,7 +86,7 @@ start_reclaim() {
     # check whether cert has already been generated
     if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
     then
-        echo "\n"
+        echo ""
         echo "No CA cert found. Generating..."
         if [ -f ./bin/generate-ca ]
         then
@@ -100,16 +100,16 @@ start_reclaim() {
     fi
 
     # has user given preferences? always override
-    if [[ $CUSTOM_DOCKERFILE = 1 || $DEMO_ENABLED = 1 ]]
+    if [[ $CUSTOM_COMPOSEFILE = 1 || $DEMO_ENABLED = 1 ]]
     then
         # store info about docker-compose file
         mkdir -p .tmp
-        echo $DOCKERFILE > .tmp/composefile
+        echo $COMPOSEFILE > .tmp/composefile
     else
         # try to read an existing starting configuration
         if [ -f .tmp/compose ]
         then
-            DOCKERFILE=`cat ./tmp/compose`
+            COMPOSEFILE=`cat ./tmp/compose`
         fi
     fi
 
@@ -117,9 +117,9 @@ start_reclaim() {
     then
         echo "Not pulling images from Docker Hub"
     else
-        docker-compose -f $DOCKERFILE pull
+        docker-compose -f $COMPOSEFILE pull
     fi
-    docker-compose -f $DOCKERFILE up -d
+    docker-compose -f $COMPOSEFILE up -d
 
     echo -e "started.\n"
     reclaim_status
@@ -135,11 +135,11 @@ purge_reclaim() {
 
     if [ -f .tmp/compose ]
     then
-        DOCKERFILE=`cat ./tmp/compose`
+        COMPOSEFILE=`cat ./tmp/compose`
         rm -rf .tmp
     fi
 
-    docker-compose -f $DOCKERFILE down --remove
+    docker-compose -f $COMPOSEFILE down --remove
     echo "Do you also want to remove the named volumes (persistent data)?"
     echo -n "(Y/n) "
     read input
