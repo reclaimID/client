@@ -69,9 +69,9 @@ parse_opt() {
 
 stop_reclaim() {
     echo "Shutting down $PROD"
-    if [ -f .tmp/compose ]
+    if [ -f .tmp/composefile ]
     then
-        COMPOSEFILE=`cat .tmp/compose`
+        COMPOSEFILE=`cat .tmp/composefile`
     fi
     docker-compose -f $COMPOSEFILE down
 
@@ -104,9 +104,9 @@ start_reclaim() {
         echo $COMPOSEFILE > .tmp/composefile
     else
         # try to read an existing starting configuration
-        if [ -f .tmp/compose ]
+        if [ -f .tmp/composefile ]
         then
-            COMPOSEFILE=`cat ./tmp/compose`
+            COMPOSEFILE=`cat .tmp/composefile`
         fi
     fi
 
@@ -132,9 +132,9 @@ purge_reclaim() {
     reclaim_banner
     echo "Purging $PROD"
 
-    if [ -f .tmp/compose ]
+    if [ -f .tmp/composefile ]
     then
-        COMPOSEFILE=`cat ./tmp/compose`
+        COMPOSEFILE=`cat ./tmp/composefile`
         rm -rf .tmp
     fi
 
