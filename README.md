@@ -69,4 +69,6 @@ The script furthermore supports arguments:
 | --demo (-d) | also startup a demo relying party |
 | --compose-file (-f) | supply a custom docker-compose.yml |
 
+The arguments have to be supplied only with start. The script will track arguments as whether a demo needs to be started or a custom docker-compose.yml for consequent starts.
+
 (c) 2018 Fraunhofer AISEC
