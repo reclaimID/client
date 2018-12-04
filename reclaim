@@ -134,7 +134,7 @@ purge_reclaim() {
 
     if [ -f .tmp/composefile ]
     then
-        COMPOSEFILE=`cat ./tmp/composefile`
+        COMPOSEFILE=`cat .tmp/composefile`
         rm -rf .tmp
     fi
 
