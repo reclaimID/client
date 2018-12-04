@@ -39,7 +39,7 @@ services:
             - RECLAIM_RUNTIME=10.1.1.3
             - VIRTUAL_HOST=demo.reclaim.local
         volumes:
-            - ../gns/gns_ca_cert.pem:/usr/local/share/ca-certificates/gns_ca_cert.pem:ro
+            - ../.gns/gns_ca_cert.pem:/usr/local/share/ca-certificates/gns_ca_cert.pem:ro
         networks:
             reclaim-net:
                 ipv4_address: 10.1.1.5
