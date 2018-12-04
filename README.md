@@ -62,6 +62,7 @@ The script supports the following commands:
 | purge | remove reclaim containers and (optionally) remove persistent data |
 
 The script furthermore supports arguments:
+
 | Flag  | Description |
 | ------------- | ------------- |
 | --no-pull (-n)  | don't pull remote images |
