@@ -56,12 +56,16 @@ The script supports the following commands:
 
 | Command  | Description |
 | ------------- | ------------- |
-| stop  | stop all reclaim containers  |
-| start  | start reclaim containers  |
+| stop  | stop all reclaim containers |
+| start  | start reclaim containers |
 | restart | restart reclaim containers |
 | purge | remove reclaim containers and (optionally) remove persistent data |
-| start_demo | same as start, but also start a demo (relying party) container |
-| stop_demo | same as stop, also stops demo |
-| purge_demo | same as purge, also purges demo |
+
+The script furthermore supports arguments:
+| Flag  | Description |
+| ------------- | ------------- |
+| --no-pull (-n)  | don't pull remote images |
+| --demo (-d) | also startup a demo relying party |
+| --compose-file (-f) | supply a custom docker-compose.yml |
 
 (c) 2018 Fraunhofer AISEC

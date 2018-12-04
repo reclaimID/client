@@ -28,7 +28,7 @@ parse_opt() {
                 COMPOSEFILE="config/docker-compose_demo.yml"
                 shift
                 ;;
-            -f|--dockerfile)
+            -f|--compose-file)
                 COMPOSEFILE="$2"
                 CUSTOM_COMPOSEFILE=1
                 shift
@@ -189,7 +189,7 @@ reclaim_usage() {
     echo "$0 purge: shuts $PROD down and purges its data"
     echo "the --no-pull (-n) flag can be used to prevent pulling images from remote"
     echo "the --demo (-d) flag can be used to start a demo relying party"
-    echo "the --dockerfile (-f) flag can be used to specify a custom Dockerfile"
+    echo "the --compose-file (-f) flag can be used to specify a custom docker-compose.yml"
 }
 
 reclaim_full() {
