@@ -33,12 +33,12 @@ while getopts "c:" opt; do
     esac
 done
 
-GNSCERT="gns/gnscert.pem"
-GNSCAKY="gns/gnscakey.pem"
-GNSCANO="gns/gnscakeynoenc.pem"
-GNS_CA_KEY_PEM="gns/gns_ca_cert.pem"
+GNSCERT=".gns/gnscert.pem"
+GNSCAKY=".gns/gnscakey.pem"
+GNSCANO=".gns/gnscakeynoenc.pem"
+GNS_CA_KEY_PEM=".gns/gns_ca_cert.pem"
 
-mkdir -p gns
+mkdir -p .gns
 
 openssl req -config ./config/openssl.cnf -new -x509 -days 3650 -extensions v3_ca -keyout ${GNSCAKY} -out ${GNSCERT} -subj "/C=ZZ/L=World/O=GNU/OU=GNUnet/CN=GNS Proxy CA/emailAddress=bounce@gnunet.org" -passout pass:"GNU Name System" >/dev/null 2>&1
 
