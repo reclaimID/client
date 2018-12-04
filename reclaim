@@ -110,7 +110,7 @@ start_reclaim() {
         fi
     fi
 
-    if [[ $NO_PULL ]]
+    if [[ 1 = $NO_PULL ]]
     then
         echo "Not pulling images from Docker Hub"
     else
