@@ -16,6 +16,10 @@ ACTION="none"
 NOARG=1
 SECRET_LENGTH=32
 
+# prevent warnings
+export PSW_SECRET=0
+export JWT_SECRET=0
+
 parse_opt() {
     while [[ $# -gt 0 ]]
     do
@@ -77,10 +81,6 @@ stop_reclaim() {
     then
         COMPOSEFILE=`cat .tmp/composefile`
     fi
-
-    # prevent warnings
-    export PSW_SECRET=0
-    export JWT_SECRET=0
 
     docker-compose -f $COMPOSEFILE down
 
