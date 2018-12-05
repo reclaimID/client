@@ -14,6 +14,7 @@ COMPOSEFILE="config/docker-compose.yml"
 CUSTOM_COMPOSEFILE=0
 ACTION="none"
 NOARG=1
+SECRET_LENGTH=32
 
 parse_opt() {
     while [[ $# -gt 0 ]]
@@ -76,6 +77,11 @@ stop_reclaim() {
     then
         COMPOSEFILE=`cat .tmp/composefile`
     fi
+
+    # prevent warnings
+    export PSW_SECRET=0
+    export JWT_SECRET=0
+
     docker-compose -f $COMPOSEFILE down
 
     echo -e "reclaim stopped.\n"
@@ -118,6 +124,26 @@ start_reclaim() {
     else
         docker-compose -f $COMPOSEFILE pull
     fi
+
+    # TODO: provide user with an option for supplying custom pws
+
+    # check whether passwords have already been generated
+    if [ -f .tmp/psw_secret ]
+    then
+        export PSW_SECRET=$(cat .tmp/psw_secret)
+    else
+        export PSW_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $SECRET_LENGTH | head -1)
+        echo "$PSW_SECRET" > .tmp/psw_secret
+    fi
+
+    if [ -f .tmp/jwt_secret ]
+    then
+        export JWT_SECRET=$(cat .tmp/jwt_secret)
+    else
+        export JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $SECRET_LENGTH | head -1)
+        echo "$JWT_SECRET" > .tmp/jwt_secret
+    fi
+
     docker-compose -f $COMPOSEFILE up -d
 
     echo -e "started.\n"

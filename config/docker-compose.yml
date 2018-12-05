@@ -19,6 +19,8 @@ services:
             - VIRTUAL_HOST=api.reclaim.local
             - VIRTUAL_PORT=7776
             - WEBSERVER_IP=10.1.1.4 # should be the same as static assignment for service reclaim-ui
+            - JWT_SECRET=${JWT_SECRET}
+            - PSW_SECRET=${PSW_SECRET}
         stdin_open: true
         tty: true
         networks:
