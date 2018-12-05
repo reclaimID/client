@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p .tmp
+
 PROD="reclaim"
 
 RED='\033[0;31m'
@@ -21,6 +23,7 @@ parse_opt() {
         case $key in
             -n|--no-pull)
                 NO_PULL=1
+                `touch .tmp/no_pull`
                 shift
                 ;;
             -d|--demo)
@@ -100,7 +103,6 @@ start_reclaim() {
     if [[ $CUSTOM_COMPOSEFILE = 1 || $DEMO_ENABLED = 1 ]]
     then
         # store info about docker-compose file
-        mkdir -p .tmp
         echo $COMPOSEFILE > .tmp/composefile
     else
         # try to read an existing starting configuration
@@ -199,6 +201,11 @@ reclaim_full() {
 }
 
 parse_opt "$@"
+
+if [ -f .tmp/no_pull ]
+    then
+    NO_PULL=1
+fi
 
 case $ACTION in
     none)
