@@ -1,4 +1,6 @@
-# The re:claim client
+![re:claim](https://avatars2.githubusercontent.com/u/44837876?s=200&v=4)
+
+# The client
 re:claim is a novel approach for decentralized, self-sovereign identity management.
 Its core features are:
 
