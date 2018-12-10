@@ -1,4 +1,5 @@
 language: bash
-
+services:
+    - docker
 script:
     - tests/test.sh
