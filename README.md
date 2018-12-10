@@ -70,9 +70,9 @@ The script furthermore supports arguments:
 
 | Flag  | Description |
 | ------------- | ------------- |
-| --no-pull (-n)  | don't pull remote images |
 | --demo (-d) | also startup a demo relying party |
 | --compose-file (-f) | supply a custom docker-compose.yml |
+| --no-pull | don't pull remote images |
 
 The arguments have to be supplied only with start. The script will track arguments as whether a demo needs to be started or a custom docker-compose.yml for consequent starts.
 

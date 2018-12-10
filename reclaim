@@ -16,6 +16,7 @@ ACTION="none"
 NOARG=1
 SECRET_LENGTH=32
 export YES_TO_ALL=0
+export NO_TO_ALL=0
 
 # prevent warnings
 export PSW_SECRET=0
@@ -27,7 +28,7 @@ parse_opt() {
         NOARG=0
         key="$1"
         case $key in
-            -n|--no-pull)
+            --no-pull)
                 NO_PULL=1
                 `touch .tmp/no_pull`
                 shift
@@ -63,6 +64,10 @@ parse_opt() {
                 export YES_TO_ALL=1
                 shift
                 ;;
+            -n|--no-to-all)
+                export NO_TO_ALL=1
+                shift
+                ;;
             *)
                 reclaim_banner
                 echo -e "${RED}Unknown argument:${NC} $key\n"
@@ -78,6 +83,13 @@ parse_opt() {
         echo -e "${RED}WARNING: demo was enabled and custom Dockerfile set. This is currently NOT supported."
         echo -e "Not starting demo, then.${NC}"
     fi
+
+    if [ $YES_TO_ALL = 1 ] && [ $NO_TO_ALL = 1 ]
+    then
+         echo -e "${RED}ERROR: flags -n and -y are exclusive.${NC}"
+         exit 1
+     fi
+
 }
 
 stop_reclaim() {
@@ -172,13 +184,13 @@ purge_reclaim() {
     fi
 
     docker-compose -f $COMPOSEFILE down --remove
-    if ! [ 1 = $YES_TO_ALL ]
+    if ! [ 1 = $YES_TO_ALL ] && [ 0 = $NO_TO_ALL ]
     then
         echo "Do you also want to remove the named volumes (persistent data)?"
         echo -n "(Y/n) "
         read input
     fi
-    if [[ $input = "Y" ]] || [ 1 = $YES_TO_ALL ]
+    if ( [[ $input = "Y" ]] || [ 1 = $YES_TO_ALL ] ) && [ 0 = $NO_TO_ALL ]
     then
         echo "removing named volumes"
         docker volume rm reclaim-gnunet || true
