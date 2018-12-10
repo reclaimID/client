@@ -8,7 +8,6 @@ then
     exit 1
 fi
 
-
 #echo "Generating CA"
 options=''
 while getopts "c:" opt; do
@@ -58,19 +57,25 @@ then
     exit 0
 fi
 
+if ! [ 1 = $YES_TO_ALL ]
+then
+    echo "This utility can also add your newly generated CA certificate to the trust stores of Chrome and Firefox. Do you want to allow this?"
+    echo -n "(Y/n) "
+    read input
+fi
 
-echo "This utility can also add your newly generated CA certificate to the trust stores of Chrome and Firefox. Do you want to allow this?"
-echo -n "(Y/n) "
-read input
-if ! [ -z $input ] && [ $input = "Y" ]
+if ! [ -z $input ] && [ $input = "Y" ] || [ 1 = $YES_TO_ALL ]
 then
     for f in ~/.mozilla/firefox/*.*/
     do
         if [ -d $f ]; then
-            echo "Should the CA certificate be imported in profile $f?"
-            echo -n "(Y/n) "
-            read input
-            if ! [ -z $input ] && [ $input = "Y" ]
+            if ! [ 1 = $YES_TO_ALL ]
+            then
+                echo "Should the CA certificate be imported in profile $f?"
+                echo -n "(Y/n) "
+                read input
+            fi
+            if ! [ -z $input ] && [ $input = "Y" ] || [ 1 = $YES_TO_ALL ]
             then
                 echo "Importing CA into Firefox at $f"
                 # delete old certificate (if any)

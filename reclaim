@@ -15,6 +15,7 @@ CUSTOM_COMPOSEFILE=0
 ACTION="none"
 NOARG=1
 SECRET_LENGTH=32
+export YES_TO_ALL=0
 
 # prevent warnings
 export PSW_SECRET=0
@@ -56,6 +57,10 @@ parse_opt() {
                 ;;
             restart)
                 ACTION="restart"
+                shift
+                ;;
+            -y|--yes-to-all)
+                export YES_TO_ALL=1
                 shift
                 ;;
             *)
@@ -167,10 +172,13 @@ purge_reclaim() {
     fi
 
     docker-compose -f $COMPOSEFILE down --remove
-    echo "Do you also want to remove the named volumes (persistent data)?"
-    echo -n "(Y/n) "
-    read input
-    if [[ $input = "Y" ]]
+    if ! [ 1 = $YES_TO_ALL ]
+    then
+        echo "Do you also want to remove the named volumes (persistent data)?"
+        echo -n "(Y/n) "
+        read input
+    fi
+    if [[ $input = "Y" ]] || [ 1 = $YES_TO_ALL ]
     then
         echo "removing named volumes"
         docker volume rm reclaim-gnunet || true
