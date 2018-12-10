@@ -1,95 +1,172 @@
 #!/bin/bash
 
+mkdir -p .tmp
+
 PROD="reclaim"
 
-if [[ $1 = "stop" ]]
-then
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+REC='\033[1;34m'
+NC='\033[0m'
+NO_PULL=0
+DEMO_ENABLED=0
+COMPOSEFILE="config/docker-compose.yml"
+CUSTOM_COMPOSEFILE=0
+ACTION="none"
+NOARG=1
+SECRET_LENGTH=32
+
+# prevent warnings
+export PSW_SECRET=0
+export JWT_SECRET=0
+
+parse_opt() {
+    while [[ $# -gt 0 ]]
+    do
+        NOARG=0
+        key="$1"
+        case $key in
+            -n|--no-pull)
+                NO_PULL=1
+                `touch .tmp/no_pull`
+                shift
+                ;;
+            -d|--demo)
+                DEMO_ENABLED=1
+                COMPOSEFILE="config/docker-compose_demo.yml"
+                shift
+                ;;
+            -f|--compose-file)
+                COMPOSEFILE="$2"
+                CUSTOM_COMPOSEFILE=1
+                shift
+                shift
+                ;;
+            start)
+                ACTION="start"
+                shift
+                ;;
+            stop)
+                ACTION="stop"
+                shift
+                ;;
+            purge)
+                ACTION="purge"
+                shift
+                ;;
+            restart)
+                ACTION="restart"
+                shift
+                ;;
+            *)
+                reclaim_banner
+                echo -e "${RED}Unknown argument:${NC} $key\n"
+                reclaim_usage
+                exit 1
+                shift
+                ;;
+        esac
+    done
+
+    if [[ $CUSTOM_COMPOSEFILE = 1 && $DEMO_ENABLED = 1 ]];
+    then
+        echo -e "${RED}WARNING: demo was enabled and custom Dockerfile set. This is currently NOT supported."
+        echo -e "Not starting demo, then.${NC}"
+    fi
+}
+
+stop_reclaim() {
     echo "Shutting down $PROD"
-    docker-compose -f config/docker-compose.yml down
-    exit 0
-fi
+    if [ -f .tmp/composefile ]
+    then
+        COMPOSEFILE=`cat .tmp/composefile`
+    fi
 
-if [[ $1 = "restart" ]]
-then
-    echo "Restarting $PROD"
-    docker-compose -f config/docker-compose.yml down
-fi
+    docker-compose -f $COMPOSEFILE down
 
-if ([[ $1 = "start_demo" ]] || [[ $1 = "restart_demo" ]])
-then
-    echo -n "Starting $PROD Demo..."
+    echo -e "reclaim stopped.\n"
+}
 
+start_reclaim() {
+    echo "Starting $PROD..."
     # check whether cert has already been generated
     if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
     then
-      echo "\n"
-      echo "No CA cert found. Generating..."
-      if [ -f ./bin/generate-ca ]
-      then
-        ./bin/generate-ca
-      else
-        echo "Error... CA helper not found!"
-        exit 1
-      fi
+        echo ""
+        echo "No CA cert found. Generating..."
+        if [ -f ./bin/generate-ca ]
+        then
+            ./bin/generate-ca
+        else
+            echo "Error... CA helper not found!"
+            exit 1
+        fi
     else
         echo "gns certificate has already been added"
     fi
 
-    docker-compose -f config/docker-compose_demo.yml pull
-    docker-compose -f config/docker-compose_demo.yml up -d
-    echo "started."
-    exit 0
-fi
-
-if ([[ $1 = "start" ]] || [[ $1 = "restart" ]])
-then
-    echo -n "Starting $PROD..."
-
-    # check whether cert has already been generated
-    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
+    # has user given preferences? always override
+    if [[ $CUSTOM_COMPOSEFILE = 1 || $DEMO_ENABLED = 1 ]]
     then
-      echo "\n"
-      echo "No CA cert found. Generating..."
-      if [ -f ./bin/generate-ca ]
-      then
-        ./bin/generate-ca
-      else
-        echo "Error... CA helper not found!"
-        exit 1
-      fi
+        # store info about docker-compose file
+        echo $COMPOSEFILE > .tmp/composefile
     else
-        echo "gns certificate has already been added"
+        # try to read an existing starting configuration
+        if [ -f .tmp/composefile ]
+        then
+            COMPOSEFILE=`cat .tmp/composefile`
+        fi
     fi
 
-    docker-compose -f config/docker-compose.yml pull
-    docker-compose -f config/docker-compose.yml up -d
-    echo "started."
-    exit 0
-fi
-
-if [[ $1 = "purge_demo" ]]
-then
-    echo "Purging $PROD demo"
-    docker-compose -f config/docker-compose_demo.yml down --remove
-    echo "Do you also want to remove the named volumes (persistent data)?"
-    echo -n "(Y/n) "
-    read input
-    if [[ $input = "Y" ]]
+    if [[ 1 = $NO_PULL ]]
     then
-        echo "removing named volumes"
-        docker volume rm reclaim-gnunet || true
-        docker volume rm reclaim || true
+        echo "Not pulling images from Docker Hub"
     else
-        echo "not removing named volumes"
+        docker-compose -f $COMPOSEFILE pull
     fi
-    exit 0
-fi
 
+    # TODO: provide user with an option for supplying custom pws
 
-if [[ $1 = "purge" ]]
-then
+    # check whether passwords have already been generated
+    if [ -f .tmp/psw_secret ]
+    then
+        export PSW_SECRET=$(cat .tmp/psw_secret)
+    else
+        export PSW_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $SECRET_LENGTH | head -1)
+        echo "$PSW_SECRET" > .tmp/psw_secret
+    fi
+
+    if [ -f .tmp/jwt_secret ]
+    then
+        export JWT_SECRET=$(cat .tmp/jwt_secret)
+    else
+        export JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $SECRET_LENGTH | head -1)
+        echo "$JWT_SECRET" > .tmp/jwt_secret
+    fi
+
+    docker-compose -f $COMPOSEFILE up -d
+
+    echo -e "started.\n"
+}
+
+restart_reclaim() {
+    reclaim_banner
+    stop_reclaim
+    start_reclaim
+    reclaim_status
+}
+
+purge_reclaim() {
+    reclaim_banner
     echo "Purging $PROD"
-    docker-compose -f config/docker-compose.yml down --remove
+
+    if [ -f .tmp/composefile ]
+    then
+        COMPOSEFILE=`cat .tmp/composefile`
+        rm -rf .tmp
+    fi
+
+    docker-compose -f $COMPOSEFILE down --remove
     echo "Do you also want to remove the named volumes (persistent data)?"
     echo -n "(Y/n) "
     read input
@@ -101,36 +178,84 @@ then
     else
         echo "not removing named volumes"
     fi
-    exit 0
+    reclaim_status
+}
+
+reclaim_banner() {
+    echo -e "${REC}                     __      _         "
+    echo "   ________  _ _____/ /___ _(_)___ ___ "
+    echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
+    echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
+    echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
+    echo -e "                                       ${NC}"
+    echo "https://reclaim-identity.io"
+    echo "(C) 2018 Fraunhofer AISEC"
+    echo ""
+}
+
+reclaim_status() {
+    echo "Status:"
+    if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-runtime) 2>/dev/null` ]; then
+        echo -e "${RED}\xE2\x9D\x8C Service is not running.${NC}"
+    else
+        echo -e "${GREEN}\xE2\x9C\x94 Service is running.${NC}"
+    fi
+
+    if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-ui) 2>/dev/null` ]; then
+        echo -e "${RED}\xE2\x9D\x8C UI is not running.${NC}"
+    else
+        echo -e "${GREEN}\xE2\x9C\x94 UI is running.${NC}"
+    fi
+    echo ""
+}
+
+reclaim_usage() {
+    echo "Usage:"
+    echo "$0 start: starts $PROD"
+    echo "$0 stop: shuts $PROD down"
+    echo "$0 restart: restarts $PROD"
+    echo "$0 purge: shuts $PROD down and purges its data"
+    echo "the --no-pull (-n) flag can be used to prevent pulling images from remote"
+    echo "the --demo (-d) flag can be used to start a demo relying party"
+    echo "the --compose-file (-f) flag can be used to specify a custom docker-compose.yml"
+}
+
+reclaim_full() {
+    reclaim_banner
+    reclaim_status
+    reclaim_usage
+}
+
+parse_opt "$@"
+
+if [ -f .tmp/no_pull ]
+    then
+    NO_PULL=1
 fi
 
-echo "                     __      _         "
-echo "   ________  _ _____/ /___ _(_)___ ___ "
-echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
-echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
-echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
-echo "                                       "
-echo "https://reclaim-identity.io"
-echo "(C) 2018 Fraunhofer AISEC"
-echo ""
-echo "Status:"
-if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-runtime) 2>/dev/null` ]; then
-  echo "* Service is not running."
-else
-  echo "* Service is running."
-fi
+case $ACTION in
+    none)
+        ;;
+    start)
+        start_reclaim
+        ;;
+    stop)
+        stop_reclaim
+        ;;
+    restart)
+        restart_reclaim
+        ;;
+    purge)
+        purge_reclaim
+        ;;
+    *)
+        echo "${RED}Unregistered Action. This should not happen.${NC}"
+        exit 1
+        ;;
+esac
 
-if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-ui) 2>/dev/null` ]; then
-  echo "* UI is not running."
-else
-  echo "* UI is running."
+if [ $NOARG = 1 ]
+then
+    reclaim_full
 fi
-echo ""
-echo "Usage:"
-echo "$0 start: starts $PROD"
-echo "$0 start_demo: starts $PROD with one example relying party"
-echo "$0 stop: shuts $PROD down"
-echo "$0 restart: restarts $PROD"
-echo "$0 restart_demo: restarts $PROD and one example relying party"
-echo "$0 purge: shuts $PROD down and purges its data"
 
