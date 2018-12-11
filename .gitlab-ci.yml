@@ -1,0 +1,20 @@
+image: docker:latest
+
+services:
+    - docker:dind
+
+stages:
+    - test
+
+test:
+    stage: test
+    before_script:
+        - apk update
+        - apk upgrade
+        - apk --no-cache add --update git bash nss-tools openssl make py-pip
+        - pip install docker-compose
+        - git submodule update --init --recursive
+    script:
+        - tests/test.sh
+          #- ./reclaim -y -d start
+          #- docker volume ls

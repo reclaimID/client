@@ -183,7 +183,6 @@ purge_reclaim() {
         rm -rf .tmp
     fi
 
-    docker-compose -f $COMPOSEFILE down --remove
     if ! [ 1 = $YES_TO_ALL ] && [ 0 = $NO_TO_ALL ]
     then
         echo "Do you also want to remove the named volumes (persistent data)?"
@@ -193,10 +192,12 @@ purge_reclaim() {
     if ( [[ $input = "Y" ]] || [ 1 = $YES_TO_ALL ] ) && [ 0 = $NO_TO_ALL ]
     then
         echo "removing named volumes"
-        docker volume rm reclaim-gnunet || true
-        docker volume rm reclaim || true
+        #docker volume rm reclaim-gnunet || true
+        #docker volume rm reclaim-reclaim || true
+        docker-compose -f $COMPOSEFILE down --remove --volumes
     else
         echo "not removing named volumes"
+        docker-compose -f $COMPOSEFILE down --remove
     fi
     reclaim_status
 }

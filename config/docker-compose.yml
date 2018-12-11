@@ -52,7 +52,7 @@ services:
 
 volumes:
     reclaim:
-        name: reclaim
+        name: reclaim-reclaim
     reclaim-gnunet:
         name: reclaim-gnunet
 

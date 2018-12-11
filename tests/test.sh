@@ -46,8 +46,7 @@ load 'libs/bats-assert/load'
     [ -d .tmp ]
     run ./reclaim -n purge
     assert_success
-    docker volume ls
-    run docker volume inspect reclaim 1> /dev/null
+    run docker volume inspect reclaim-reclaim 1> /dev/null
     assert_success
     run docker volume inspect reclaim-gnunet 1> /dev/null
     assert_success
@@ -59,7 +58,7 @@ load 'libs/bats-assert/load'
     [ -d .tmp ]
     run ./reclaim -y purge
     assert_success
-    run docker volume inspect reclaim 1> /dev/null
+    run docker volume inspect reclaim-reclaim 1> /dev/null
     assert_failure
     run docker volume inspect reclaim-gnunet 1> /dev/null
     assert_failure
