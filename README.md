@@ -1,7 +1,6 @@
 ![re:claim](https://avatars2.githubusercontent.com/u/44837876?s=200&v=4)
 
-[![Build Status](https://travis-ci.org/reclaimID/client.svg?branch=master)](https://travis-ci.org/reclaimID/client)
-
+[![pipeline status](https://gitlab.com/reclaimid/client/badges/master/pipeline.svg)](https://gitlab.com/reclaimid/client/commits/master)
 
 # The client
 re:claim is a novel approach for decentralized, self-sovereign identity management.
