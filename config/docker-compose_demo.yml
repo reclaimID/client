@@ -11,7 +11,7 @@ services:
             - VIRTUAL_HOST=ui.reclaim.local
 
     reclaim-runtime:
-        image: reclaimid/runtime:demo
+        image: registry.gitlab.com/reclaimid/runtime:demo
         container_name: reclaim-runtime
         environment:
             - RECLAIMUI_URL=https://ui.reclaim/#/identities
@@ -27,7 +27,7 @@ services:
             reclaim-net:
                 ipv4_address: 10.1.1.3
         volumes:
-            - reclaim:/etc/reclaim
+            - reclaim-reclaim:/etc/reclaim
             - reclaim-gnunet:/root/.local/share/gnunet
         ports:
             - "7777:7777"
@@ -43,7 +43,7 @@ services:
             - JWT_SECRET=${JWT_SECRET}
             - PSW_SECRET=${PSW_SECRET}
         volumes:
-            - ../.gns/gns_ca_cert.pem:/usr/local/share/ca-certificates/gns_ca_cert.pem:ro
+            - reclaim-cacert:/usr/local/share/ca-certificates
         networks:
             reclaim-net:
                 ipv4_address: 10.1.1.5
@@ -61,17 +61,19 @@ services:
             reclaim-net:
                 ipv4_address: 10.1.1.4
         volumes:
-            - reclaim:/etc/nginx/certs:ro
+            - reclaim-reclaim:/etc/nginx/certs:ro
             - /var/run/docker.sock:/tmp/docker.sock:ro
         ports:
             - "80:80"
             - "443:443"
 
 volumes:
-    reclaim:
+    reclaim-reclaim:
         name: reclaim-reclaim
     reclaim-gnunet:
         name: reclaim-gnunet
+    reclaim-cacert:
+        name: reclaim-cacert
 
 networks:
     reclaim-net:

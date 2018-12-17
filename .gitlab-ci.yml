@@ -4,17 +4,16 @@ services:
     - docker:dind
 
 stages:
-    - test
+    - test_client
 
-test:
-    stage: test
-    before_script:
-        - apk update
-        - apk upgrade
-        - apk --no-cache add --update git bash nss-tools openssl make py-pip
-        - pip install docker-compose
-        - git submodule update --init --recursive
-    script:
-        - tests/test.sh
-          #- ./reclaim -y -d start
-          #- docker volume ls
+before_script:
+    - apk update
+    - apk upgrade
+    - apk --no-cache add --update git bash nss-tools openssl make py-pip
+    - pip install docker-compose
+    - git submodule update --init --recursive
+
+test_client:
+    stage: test_client
+        script:
+        - tests/test_client.sh
