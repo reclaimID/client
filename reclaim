@@ -107,7 +107,7 @@ stop_reclaim() {
 start_reclaim() {
     echo "Starting $PROD..."
     # check whether cert has already been generated
-    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gnscert.pem &> /dev/null
+    if ! docker run --rm -v reclaim-gnunet:/volume alpine ls /volume/gns/gns_ca_cert.pem &> /dev/null
     then
         echo ""
         echo "No CA cert found. Generating..."
