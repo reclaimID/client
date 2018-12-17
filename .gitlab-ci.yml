@@ -15,5 +15,5 @@ before_script:
 
 test_client:
     stage: test_client
-        script:
+    script:
         - tests/test_client.sh
