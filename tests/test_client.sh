@@ -4,7 +4,6 @@ load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
 
 @test "start/stop reclaim with demo" {
-    skip
     run ./reclaim -y -d start
     assert_success
     run ./reclaim -y -d stop
@@ -12,7 +11,6 @@ load 'libs/bats-assert/load'
 }
 
 @test "start/stop reclaim without demo" {
-    skip
     run ./reclaim -y start
     assert_success
     run ./reclaim -y stop
@@ -20,7 +18,6 @@ load 'libs/bats-assert/load'
 }
 
 @test "reclaim generates certificates" {
-    skip
     run ./reclaim -y start
     assert_success
     [ -f .gns/gns_ca_cert.pem ]
@@ -29,7 +26,6 @@ load 'libs/bats-assert/load'
 }
 
 @test "client saves configuration into .tmp" {
-    skip
     run ./reclaim -y -d start
     assert_success
 
@@ -45,7 +41,6 @@ load 'libs/bats-assert/load'
 }
 
 @test "reclaim purges data but NOT volumes" {
-    skip
     run ./reclaim -y start
     assert_success
     [ -d .tmp ]
@@ -58,7 +53,6 @@ load 'libs/bats-assert/load'
 }
 
 @test "reclaim purges data AND volumes" {
-    skip
     run ./reclaim -y start
     assert_success
     [ -d .tmp ]
@@ -71,14 +65,15 @@ load 'libs/bats-assert/load'
 }
 
 @test "client fully functional" {
-    #run ./reclaim -y -d start
-    #assert_success
+    skip
+    run ./reclaim -y -d start
+    assert_success
     [ $(docker ps | wc -l) -eq 5 ]
     a=$(curl -I -X GET -s -H 'Host: demo.reclaim.local' http://127.0.0.1:80/login | head -1 | cut -d ' ' -f 1,2 | grep '200 OK')
     run echo "test"
     echo "$a"
-    #run ./reclaim -y stop
-    #assert_success
+    run ./reclaim -y stop
+    assert_success
 }
 
 
