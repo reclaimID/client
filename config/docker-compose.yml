@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
     reclaim-ui:
-        image: reclaimid/ui
+        image: registry.gitlab.com/reclaimid/ui:latest
         container_name: reclaim-ui
         networks:
             reclaim-net:

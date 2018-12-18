@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
     reclaim-ui:
-        image: reclaimid/ui
+        image: registry.gitlab.com/reclaimid/ui:latest
         container_name: reclaim-ui
         networks:
             reclaim-net:
@@ -35,7 +35,7 @@ services:
             - "2086:2086"
 
     reclaim-demo:
-        image: reclaimid/demo:latest
+        image: registry.gitlab.com/reclaimid/demo:latest
         container_name: reclaim-demo
         environment:
             - RECLAIM_RUNTIME=10.1.1.3
