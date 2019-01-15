@@ -41,7 +41,7 @@ Three containers will be create, one for the re:claim UI, one for the re:claim r
 re:claim makes heavy use of the GNU Name System (GNS). To use GNS, you need to configure your browser to use the GNS proxy so that names can be properly resolved.
 
 To configure Firefox to use the GNS proxy:
-![Proxy Configuration](https://reclaim-identity.io/assets/proxy_setup.png)
+![Proxy Configuration](https://gitlab.com/reclaimid/client/raw/master/proxy_setup_firefox.png?inline=false)
 
 That's it! At this point you might have to restart Firefox.
 
