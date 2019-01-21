@@ -11,7 +11,7 @@ services:
             - VIRTUAL_HOST=ui.reclaim.local
 
     reclaim-runtime:
-        image: registry.gitlab.com/reclaimid/runtime:demo
+        image: registry.gitlab.com/reclaimid/runtime:latest
         container_name: reclaim-runtime
         environment:
             - RECLAIMUI_URL=https://ui.reclaim/#/identities
