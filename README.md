@@ -22,7 +22,7 @@ Other than that, the re:claim client requires just *docker-ce* (versions 17.12.0
 
 Clone this repository.
 
-## Usage
+## For End Users
 
 **Note:** Only Firefox and Chrome are supported at this time.
 
@@ -54,12 +54,15 @@ To stop re:claim execute:
 $ ./reclaim stop
 ```
 
-## Add an OIDC client
-To easily add a OIDC client via reclaim, the oidc interface of the reclaim client script can be used.
-For example, to add a client with a call-back-url *https://test.reclaim/login* issue the following command:
+## For Website Administrators
+
+**THIS SECTION IS WORK IN PROGRESS**
+To add an OpenID Connect client via reclaim, the reclaim client script can be used.
+For example, in order to add a client with a callback URI *https://test.mysite/login* issue the following command:
 ```
-$ ./reclaim oidc createClient --uri test.reclaim
+$ ./reclaim oidc createClient --uri test.mysite
 ```
+**THIS SECTION IS WORK IN PROGRESS**
 
 ## Further Functionality
 
