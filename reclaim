@@ -15,6 +15,7 @@ CUSTOM_COMPOSEFILE=0
 ACTION="none"
 NOARG=1
 SECRET_LENGTH=32
+OIDC_CMD=""
 export YES_TO_ALL=0
 export NO_TO_ALL=0
 
@@ -59,6 +60,12 @@ parse_opt() {
             restart)
                 ACTION="restart"
                 shift
+                ;;
+            oidc)
+                ACTION="oidc"
+                shift
+                OIDC_CMD="$*"
+                break
                 ;;
             -y|--yes-to-all)
                 export YES_TO_ALL=1
@@ -247,6 +254,39 @@ reclaim_full() {
     reclaim_usage
 }
 
+oidc() {
+    OIDC_ACTION="none"
+    URI=""
+    while [[ $# -gt 0 ]]
+    do
+        key="$1"
+        case $key in
+            createClient)
+                OIDC_ACTION="create"
+                shift
+                ;;
+            --uri)
+                URI=$2
+                shift
+                shift
+                ;;
+            *)
+                echo "unknown key: $1"
+                shift
+                ;;
+        esac
+    done
+
+    case $OIDC_ACTION in
+        none)
+            ;;
+        create)
+            echo "creating client"
+            docker exec reclaim-runtime create_client --uri $URI
+            ;;
+    esac
+}
+
 parse_opt "$@"
 
 if [ -f .tmp/no_pull ]
@@ -268,6 +308,9 @@ case $ACTION in
         ;;
     purge)
         purge_reclaim
+        ;;
+    oidc)
+        oidc $OIDC_CMD
         ;;
     *)
         echo "${RED}Unregistered Action. This should not happen.${NC}"

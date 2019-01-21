@@ -54,6 +54,13 @@ To stop re:claim execute:
 $ ./reclaim stop
 ```
 
+## Add an OIDC client
+To easily add a OIDC client via reclaim, the oidc interface of the reclaim client script can be used.
+For example, to add a client with a call-back-url *https://test.reclaim/login* issue the following command:
+```
+$ ./reclaim oidc createClient --uri test.reclaim
+```
+
 ## Further Functionality
 
 The script supports the following commands:
