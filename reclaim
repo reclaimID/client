@@ -16,6 +16,7 @@ ACTION="none"
 NOARG=1
 SECRET_LENGTH=32
 OIDC_CMD=""
+export LC_ALL=C
 export YES_TO_ALL=0
 export NO_TO_ALL=0
 
