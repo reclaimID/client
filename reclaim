@@ -255,6 +255,11 @@ reclaim_full() {
     reclaim_usage
 }
 
+oidc_help() {
+    # TODO: show help
+    echo "not implemented"
+}
+
 oidc() {
     OIDC_ACTION="none"
     URI=""
@@ -264,6 +269,14 @@ oidc() {
         case $key in
             createClient)
                 OIDC_ACTION="create"
+                shift
+                ;;
+            listClients)
+                OIDC_ACTION="list"
+                shift
+                ;;
+            deleteClient)
+                OIDC_ACTION="delete"
                 shift
                 ;;
             --uri)
@@ -284,6 +297,14 @@ oidc() {
         create)
             echo "creating client"
             docker exec reclaim-runtime create_client --uri $URI
+            ;;
+        list)
+            echo "listing clients"
+            docker exec reclaim-runtime list_clients
+            ;;
+        delete)
+            echo "deleting client"
+            docker exec reclaim-runtime list_clients --uri $URI
             ;;
     esac
 }
