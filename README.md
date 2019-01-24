@@ -36,7 +36,7 @@ $ ./reclaim start -d
 This command will detect whether you've run re:claim before and, if not, generate all the necessary files.
 Three containers will be create, one for the re:claim UI, one for the re:claim runtime itself and a nginx proxy.
 
-**IMPORTANT:** Upon starting re:claim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in gns/gnscert.pem.
+**IMPORTANT:** Upon starting re:claim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in the reclaim client folder as ``.gns/gnscert.pem``.
 
 re:claim makes heavy use of the GNU Name System (GNS). To use GNS, you need to configure your browser to use the GNS proxy so that names can be properly resolved.
 
