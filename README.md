@@ -30,7 +30,7 @@ The re:claim client functionality is bundled in a helper script *./reclaim* in t
 
 To get quickly up and running execute:
 ```
-$ ./reclaim start
+$ ./reclaim start -d
 ```
 
 This command will detect whether you've run re:claim before and, if not, generate all the necessary files.
