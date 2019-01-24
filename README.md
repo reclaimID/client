@@ -57,11 +57,22 @@ $ ./reclaim stop
 ## For Website Administrators
 
 **THIS SECTION IS WORK IN PROGRESS**
+
 To add an OpenID Connect client via reclaim, the reclaim client script can be used.
 For example, in order to add a client with a callback URI *https://test.mysite/login* issue the following command:
 ```
 $ ./reclaim oidc createClient --uri test.mysite
 ```
+
+You can list your OIDC clients using
+
+```
+$ ./reclaim oidc listClients (NOTE: This command is not yet implemented)
+```
+
+In order to setup your relying party, you need to use the reclaimID OIDC endpoints.
+As an example see [our Demo webpage](https://gitlab.com/reclaimid/demo/blob/master/target/demo.rb).
+
 **THIS SECTION IS WORK IN PROGRESS**
 
 ## Further Functionality
@@ -84,5 +95,20 @@ The script furthermore supports arguments:
 | --no-pull | don't pull remote images |
 
 The arguments have to be supplied only with start. The script will track arguments as whether a demo needs to be started or a custom docker-compose.yml for consequent starts.
+
+# FAQ
+
+**Q: How does re:claimID work?**
+A: re:claimID uses a name system as [identity directory service](https://en.wikipedia.org/wiki/Directory_service). In order to allow the user to enforce access control decisions, we use [attribute-based encryption](https://en.wikipedia.org/wiki/Attribute-based_encryption). This allows us to mitigate the need to manage large key sets for each attribute and avoid complex key hierarchies. For the theoretical background, there is a [scientific paper available](https://arxiv.org/abs/1805.06253v1).
+
+**Q: Why do I need to install software?**
+A: re:claimID is not your traditional web tool. It breaks with a lot of old paradigms especiall with regards to [name resolution](https://en.wikipedia.org/wiki/Domain_Name_System).
+
+**Q: Why do I need a proxy? This is inconvenient**
+A: The proxy is required to stay compatible with existing browsers (see above). This is, for example, also true for technologies such as [Tor](https://www.torproject.org/projects/torbrowser.html.en). In fact, Tor [also uses a SOCKS5 proxy](https://www.torproject.org/docs/faq.html.en#TBBSocksPort), like re:claimID.
+
+**Q: But how does a website know the attribute data is correct?**
+A: Short answer: It doesn't.
+Long answer: Identities are initially self-attested by the user. re:claimID could, however, also be used to share third party attested attributes (e.g. X.509 certificates). Further, we are working on integrating [privacy credentials](https://github.com/kiliant/zklaim) for this use case.
 
 (c) 2018 Fraunhofer AISEC
