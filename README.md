@@ -115,4 +115,10 @@ A: The proxy is required to stay compatible with existing browsers (see above). 
 A: Short answer: It doesn't.
 Long answer: Identities are initially self-attested by the user. re:claimID could, however, also be used to share third party attested attributes (e.g. X.509 certificates). Further, we are working on integrating [privacy credentials](https://github.com/kiliant/zklaim) for this use case.
 
+**Q: Where is the code?**
+
+A: re:claimID is developed as part of [GNUnet](https://stage.gnunet.org).
+The source code for the core service can be found in the [git repository](https://gnunet.org/git/gnunet.git/tree/src).
+Low-level documentation of the GNUnet reclaim subsystem can be found [here](https://docs.gnunet.org/#reclaim-Identity-Provider).
+
 (c) 2018 Fraunhofer AISEC
