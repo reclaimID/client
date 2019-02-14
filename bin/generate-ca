@@ -42,8 +42,8 @@ openssl rsa -passin pass:"GNU Name System" -in ${GNSCAKY} -out ${GNSCANO} >/dev/
 cat ${GNSCERT} ${GNSCANO} > ${GNS_CA_KEY_PEM}
 
 # copy cert in named volume
-docker run -it --rm -v reclaim-gnunet:/volume -v "${PWD}":/data alpine:latest sh -c 'mkdir -p /volume/gns && cp /data/'${GNS_CA_KEY_PEM}' /volume/gns'
-docker run -it --rm -v reclaim-cacert:/volume -v "${PWD}":/data alpine:latest sh -c 'cp /data/'${GNS_CA_KEY_PEM}' /volume/'
+docker run --rm -v reclaim-gnunet:/volume -v "${PWD}":/data alpine:latest sh -c 'mkdir -p /volume/gns && cp /data/'${GNS_CA_KEY_PEM}' /volume/gns'
+docker run --rm -v reclaim-cacert:/volume -v "${PWD}":/data alpine:latest sh -c 'cp /data/'${GNS_CA_KEY_PEM}' /volume/'
 
 echo "======================================================================"
 echo "=> Your CA certificate for GNS is $GNSCERT                          "
