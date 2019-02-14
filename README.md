@@ -30,13 +30,13 @@ The re:claim client functionality is bundled in a helper script *./reclaim* in t
 
 To get quickly up and running execute:
 ```
-$ ./reclaim start
+$ ./reclaim start -d
 ```
 
 This command will detect whether you've run re:claim before and, if not, generate all the necessary files.
-Three containers will be create, one for the re:claim UI, one for the re:claim runtime itself and a nginx proxy.
+If it finds the the respective utilities (certutil) it will also ask you if you want to import the GNS proxy certificate into your browser. Otherwise, you need to [manually add the certificate](https://support.mozilla.org/en-US/questions/1059377).
 
-**IMPORTANT:** Upon starting re:claim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in gns/gnscert.pem.
+**IMPORTANT:** Upon starting re:claim, you will be prompted to install the GNS proxy certificate. Once the certificate has been generated in the initial run, you can find it in the reclaim client folder as ``.gns/gnscert.pem``.
 
 re:claim makes heavy use of the GNU Name System (GNS). To use GNS, you need to configure your browser to use the GNS proxy so that names can be properly resolved.
 
@@ -99,16 +99,26 @@ The arguments have to be supplied only with start. The script will track argumen
 # FAQ
 
 **Q: How does re:claimID work?**
+
 A: re:claimID uses a name system as [identity directory service](https://en.wikipedia.org/wiki/Directory_service). In order to allow the user to enforce access control decisions, we use [attribute-based encryption](https://en.wikipedia.org/wiki/Attribute-based_encryption). This allows us to mitigate the need to manage large key sets for each attribute and avoid complex key hierarchies. For the theoretical background, there is a [scientific paper available](https://arxiv.org/abs/1805.06253v1).
 
 **Q: Why do I need to install software?**
+
 A: re:claimID is not your traditional web tool. It breaks with a lot of old paradigms especiall with regards to [name resolution](https://en.wikipedia.org/wiki/Domain_Name_System).
 
 **Q: Why do I need a proxy? This is inconvenient**
+
 A: The proxy is required to stay compatible with existing browsers (see above). This is, for example, also true for technologies such as [Tor](https://www.torproject.org/projects/torbrowser.html.en). In fact, Tor [also uses a SOCKS5 proxy](https://www.torproject.org/docs/faq.html.en#TBBSocksPort), like re:claimID.
 
 **Q: But how does a website know the attribute data is correct?**
+
 A: Short answer: It doesn't.
 Long answer: Identities are initially self-attested by the user. re:claimID could, however, also be used to share third party attested attributes (e.g. X.509 certificates). Further, we are working on integrating [privacy credentials](https://github.com/kiliant/zklaim) for this use case.
+
+**Q: Where is the code?**
+
+A: re:claimID is developed as part of [GNUnet](https://stage.gnunet.org).
+The source code for the core service can be found in the [git repository](https://gnunet.org/git/gnunet.git/tree/src).
+Low-level documentation of the GNUnet reclaim subsystem can be found [here](https://docs.gnunet.org/#reclaim-Identity-Provider).
 
 (c) 2018 Fraunhofer AISEC
