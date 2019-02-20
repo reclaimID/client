@@ -5,6 +5,7 @@ services:
 
 stages:
     - test_client
+    - trigger_tests
 
 before_script:
     - apk update
@@ -17,3 +18,8 @@ test_client:
     stage: test_client
     script:
         - tests/test_client.sh
+
+trigger_tests:
+    stage: trigger_tests
+    script:
+        - curl -X POST -F token=$TEST_TRIGGER -F ref=master https://gitlab.com/api/v4/projects/10857649/trigger/pipeline
