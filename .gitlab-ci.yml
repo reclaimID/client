@@ -10,7 +10,7 @@ stages:
 before_script:
     - apk update
     - apk upgrade
-    - apk --no-cache add --update curl gcc git bash nss-tools openssl make py-pip
+    - apk --no-cache add --update curl python3 python3-dev gcc git bash nss-tools openssl make py-pip
     - pip install docker-compose
     - git submodule update --init --recursive
 
