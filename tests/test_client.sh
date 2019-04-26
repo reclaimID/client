@@ -20,7 +20,7 @@ load 'libs/bats-assert/load'
 @test "reclaim generates certificates" {
     run ./reclaim -y start
     assert_success
-    [ -f .gns/gns_ca_cert.pem ]
+    [ -f gns/gns_ca_cert.pem ]
     run ./reclaim -y stop
     assert_success
 }
