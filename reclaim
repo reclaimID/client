@@ -1,18 +1,10 @@
 #!/bin/sh
 VERSION="0.0.1"
 
-if test -z $RECLAIM_PREFIX
+if test -z $CLIENT_PREFIX
 then
-  RECLAIM_PREFIX=`dirname $0`
+  CLIENT_PREFIX=`dirname $0`
 fi
-
-if ! test -d $RECLAIM_PREFIX
-then
-  echo "$RECLAIM_PREFIX does not exist!"
-  exit 1
-fi
-
-CLIENT_PREFIX="$RECLAIM_PREFIX/client"
 
 if ! test -d $CLIENT_PREFIX
 then
