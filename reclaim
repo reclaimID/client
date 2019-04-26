@@ -100,7 +100,7 @@ parse_opt() {
                 ;;
             *)
                 reclaim_banner
-                echo -e "${RED}Unknown argument:${NC} $key\n"
+                echo "${RED}Unknown argument:${NC} $key\n"
                 reclaim_usage
                 exit 1
                 shift
@@ -110,13 +110,13 @@ parse_opt() {
 
     if [[ $CUSTOM_COMPOSEFILE = 1 && $DEMO_ENABLED = 1 ]];
     then
-        echo -e "${RED}WARNING: demo was enabled and custom Dockerfile set. This is currently NOT supported."
-        echo -e "Not starting demo, then.${NC}"
+        echo "${RED}WARNING: demo was enabled and custom Dockerfile set. This is currently NOT supported."
+        echo "Not starting demo, then.${NC}"
     fi
 
     if [ $YES_TO_ALL = 1 ] && [ $NO_TO_ALL = 1 ]
     then
-         echo -e "${RED}ERROR: flags -n and -y are exclusive.${NC}"
+         echo "${RED}ERROR: flags -n and -y are exclusive.${NC}"
          exit 1
      fi
 
@@ -131,7 +131,7 @@ stop_reclaim() {
 
     docker-compose -f $COMPOSEFILE down
 
-    echo -e "reclaim stopped.\n"
+    echo "reclaim stopped.\n"
 }
 
 start_reclaim() {
@@ -193,7 +193,7 @@ start_reclaim() {
 
     docker-compose -f $COMPOSEFILE up -d
 
-    echo -e "started.\n"
+    echo "started.\n"
 }
 
 restart_reclaim() {
@@ -233,12 +233,12 @@ purge_reclaim() {
 }
 
 reclaim_banner() {
-    echo -e "${REC}                     __      _         "
+    echo "${REC}                     __      _         "
     echo "   ________  _ _____/ /___ _(_)___ ___ "
     echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
     echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
     echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
-    echo -e "                                       ${NC}"
+    echo "                                       ${NC}"
     echo "https://reclaim-identity.io"
     echo "(C) 2018 Fraunhofer AISEC"
     echo ""
@@ -247,25 +247,25 @@ reclaim_banner() {
 reclaim_status() {
     echo "Status:"
     if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-runtime) 2>/dev/null` ]; then
-        echo -e "${RED}\xE2\x9D\x8C Service is not running.${NC}"
+        echo "${RED}\xE2\x9D\x8C Service is not running.${NC}"
     else
-        echo -e "${GREEN}\xE2\x9C\x94 Service is running.${NC}"
+        echo "${GREEN}\xE2\x9C\x94 Service is running.${NC}"
     fi
 
     if [ -z `docker ps -q --no-trunc | grep $(docker-compose -f config/docker-compose.yml ps -q reclaim-ui) 2>/dev/null` ]; then
-        echo -e "${RED}\xE2\x9D\x8C UI is not running.${NC}"
+        echo "${RED}\xE2\x9D\x8C UI is not running.${NC}"
     else
-        echo -e "${GREEN}\xE2\x9C\x94 UI is running.${NC}"
+        echo "${GREEN}\xE2\x9C\x94 UI is running.${NC}"
     fi
     echo ""
 }
 
 reclaim_usage() {
     echo "Usage:"
-    echo "$0 start: starts $PROD"
-    echo "$0 stop: shuts $PROD down"
-    echo "$0 restart: restarts $PROD"
-    echo "$0 purge: shuts $PROD down and purges its data"
+    echo "reclaim start: starts $PROD"
+    echo "reclaim stop: shuts $PROD down"
+    echo "reclaim restart: restarts $PROD"
+    echo "reclaim purge: shuts $PROD down and purges its data"
     echo "the --no-pull (-n) flag can be used to prevent pulling images from remote"
     echo "the --demo (-d) flag can be used to start a demo relying party"
     echo "the --compose-file (-f) flag can be used to specify a custom docker-compose.yml"
