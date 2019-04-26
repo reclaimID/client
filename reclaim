@@ -1,9 +1,9 @@
 #!/bin/sh
-
+VERSION="0.0.1"
 
 if test -z $RECLAIM_PREFIX
 then
-  RECLAIM_PREFIX=`pwd`
+  RECLAIM_PREFIX=`dirname $0`
 fi
 
 if ! test -d $RECLAIM_PREFIX
@@ -233,12 +233,9 @@ purge_reclaim() {
 }
 
 reclaim_banner() {
-    echo "${REC}                     __      _         "
-    echo "   ________  _ _____/ /___ _(_)___ ___ "
-    echo '  / ___/ _ \(_) ___/ / __ `/ / __ `__ \'
-    echo " / /  /  __/ / /__/ / /_/ / / / / / / /"
-    echo "/_/   \___(_)\___/_/\__,_/_/_/ /_/ /_/ "
-    echo "                                       ${NC}"
+    echo "re:claimID"
+    echo "Self-sovereign, Decentralised Identity Management and Personal Data Sharing"
+    echo "Version ${VERSION}"
     echo "https://reclaim-identity.io"
     echo "(C) 2018 Fraunhofer AISEC"
     echo ""
