@@ -26,12 +26,12 @@ while getopts "c:" opt; do
     esac
 done
 
-GNSCERT=".gns/gnscert.pem"
-GNSCAKY=".gns/gnscakey.pem"
-GNSCANO=".gns/gnscakeynoenc.pem"
-GNS_CA_KEY_PEM=".gns/gns_ca_cert.pem"
+GNSCERT="gns/gnscert.pem"
+GNSCAKY="gns/gnscakey.pem"
+GNSCANO="gns/gnscakeynoenc.pem"
+GNS_CA_KEY_PEM="gns/gns_ca_cert.pem"
 
-mkdir -p .gns
+mkdir -p gns
 
 openssl req -config ./config/openssl.cnf -new -x509 -days 3650 -extensions v3_ca -keyout ${GNSCAKY} -out ${GNSCERT} -subj "/C=ZZ/L=World/O=GNU/OU=GNUnet/CN=GNS Proxy CA/emailAddress=bounce@gnunet.org" -passout pass:"GNU Name System" >/dev/null 2>&1
 
@@ -46,7 +46,7 @@ docker run --rm -v reclaim-gnunet:/volume -v "${PWD}":/data alpine:latest sh -c 
 docker run --rm -v reclaim-cacert:/volume -v "${PWD}":/data alpine:latest sh -c 'cp /data/'${GNS_CA_KEY_PEM}' /volume/'
 
 echo "======================================================================"
-echo "=> Your CA certificate for GNS is $GNSCERT                          "
+echo "=> Your CA certificate for GNS is \$RECLAIM_PREFIX/$GNSCERT           "
 echo "=> Please import it into your browser!                              "
 echo "=> NOTE: This CA certificate is generated.                          "
 echo "=> It only exists on YOUR computer                                  "

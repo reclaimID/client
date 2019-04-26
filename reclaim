@@ -1,6 +1,28 @@
 #!/bin/sh
 
-mkdir -p .tmp
+
+if test -z $RECLAIM_PREFIX
+then
+  RECLAIM_PREFIX=`pwd`
+fi
+
+if ! test -d $RECLAIM_PREFIX
+then
+  echo "$RECLAIM_PREFIX does not exist!"
+  exit 1
+fi
+
+CLIENT_PREFIX="$RECLAIM_PREFIX/client"
+
+if ! test -d $CLIENT_PREFIX
+then
+  echo "$CLIENT_PREFIX does not exist!"
+  exit 1
+fi
+
+cd $CLIENT_PREFIX
+
+mkdir -p ".tmp"
 
 PROD="reclaim"
 
@@ -10,7 +32,7 @@ REC='\033[1;34m'
 NC='\033[0m'
 NO_PULL=0
 DEMO_ENABLED=0
-COMPOSEFILE="config/docker-compose.yml"
+COMPOSEFILE="$CLIENT_PREFIX/config/docker-compose.yml"
 CUSTOM_COMPOSEFILE=0
 ACTION="none"
 NOARG=1
