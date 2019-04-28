@@ -40,6 +40,7 @@ services:
         environment:
             - RECLAIM_RUNTIME=10.1.1.3
             - VIRTUAL_HOST=demo.reclaim.local
+            - RECLAIM_USE_PROXY=1
             - CLIENT_NAME=reclaim
             - JWT_SECRET=${JWT_SECRET}
             - PSW_SECRET=${PSW_SECRET}
